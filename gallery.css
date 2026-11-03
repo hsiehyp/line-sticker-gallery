@@ -1,0 +1,64 @@
+/* 三個貼圖頁（靜態／動態／全螢幕）共用樣式 */
+:root{--bg:#fbf6ea;--ink:#1f2a24;--mut:#5b665f;--green:#06c755;--green-ink:#04713a;--line:#e6dec9;--t0:#ffe3d6;--t1:#dff3e2;--t2:#fff0b8;--t3:#dde9fb;--t4:#f6e0f2}
+*{box-sizing:border-box;margin:0}
+html{color-scheme:light;scroll-padding-top:80px}
+body{background:var(--bg);color:var(--ink);font:400 18px/1.7 "Noto Sans TC","Microsoft JhengHei","PingFang TC",sans-serif}
+.wrap{max-width:1240px;margin:auto;padding:0 24px}
+
+/* 固定在上方的切換選單 */
+.topbar{position:sticky;top:0;z-index:10;background:rgba(251,246,234,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.topbar .wrap{display:flex;align-items:center;gap:16px;min-height:64px}
+.brand{font-weight:900;color:var(--green-ink);text-decoration:none;white-space:nowrap;margin-right:auto}
+.tabs{display:flex;gap:6px}
+.tabs a{display:block;padding:8px 18px;border-radius:99px;color:var(--ink);font-weight:700;text-decoration:none;white-space:nowrap}
+.tabs a:hover{background:#efe8d6}
+.tabs a[aria-current=page]{background:var(--ink);color:#fff}
+.tabs a:focus-visible,.brand:focus-visible{outline:3px solid var(--green-ink);outline-offset:2px}
+
+header{padding:56px 0 40px}
+.course{font-weight:700;color:var(--green-ink)}
+h1{font-size:clamp(2.6rem,7vw,5rem);font-weight:900;line-height:1.1;margin:10px 0 18px}
+.lead{color:var(--mut);font-size:1.2rem;max-width:40em}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:22px;padding-bottom:72px}
+.tile{position:relative;display:flex;flex-direction:column;width:100%;padding:18px 18px 20px;border:0;border-radius:24px;font:inherit;color:inherit;text-align:left;cursor:pointer;transition:transform .16s}
+.tile:hover{transform:translateY(-5px) rotate(-1deg)}
+.tile:focus-visible,.thumb:focus-visible,.close:focus-visible,.store:focus-visible{outline:3px solid var(--green-ink);outline-offset:3px}
+.tile img{display:block;width:100%;height:auto;aspect-ratio:1;object-fit:contain;margin-bottom:12px}
+.name{font-size:1.45rem;font-weight:900;line-height:1.3}
+.set{color:var(--mut);font-size:.9rem;line-height:1.45;margin-top:4px}
+footer{border-top:1px solid var(--line);padding:22px 0;color:var(--mut);font-size:.95rem}
+
+dialog{width:min(980px,calc(100vw - 32px));max-height:calc(100dvh - 32px);margin:auto;padding:0;border:0;border-radius:24px;background:#fff;color:var(--ink);overflow:auto}
+dialog::backdrop{background:rgba(20,30,24,.72)}
+.sheet{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr)}
+.stage{display:flex;align-items:center;justify-content:center;min-height:440px;padding:24px;background:var(--stage,var(--t1))}
+.stage img{display:block;width:100%;max-width:420px;height:auto;aspect-ratio:1;object-fit:contain}
+.info{position:relative;display:flex;flex-direction:column;gap:12px;padding:28px 26px}
+.info h2{font-size:2rem;font-weight:900;line-height:1.25;padding-right:48px}
+.info .set{font-size:1rem}
+.close{position:absolute;top:18px;right:18px;width:44px;height:44px;border:0;border-radius:50%;background:#efece2;font:inherit;font-size:1.3rem;color:inherit;cursor:pointer}
+.tip{color:var(--mut);font-size:.95rem}
+.thumbs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.thumb{padding:4px;border:2px solid transparent;border-radius:12px;background:#f6f3ea;cursor:pointer}
+.thumb[aria-pressed=true]{border-color:var(--green-ink);background:#fff}
+.thumb img{display:block;width:100%;height:auto;aspect-ratio:1;object-fit:contain}
+.store{display:block;margin-top:auto;padding:13px 18px;border-radius:99px;background:var(--green);color:#04210f;font-weight:700;text-align:center;text-decoration:none}
+
+@media(max-width:1020px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:760px){
+  .wrap{padding:0 16px}
+  .topbar .wrap{flex-wrap:wrap;gap:4px 12px;padding-top:8px;padding-bottom:8px}
+  .brand{font-size:.95rem}
+  .tabs{width:100%}
+  .tabs a{flex:1;padding:8px 6px;text-align:center;font-size:.95rem}
+  header{padding:32px 0 24px}
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+  .tile{padding:12px 12px 16px;border-radius:18px}
+
+  .name{font-size:1.25rem}
+  .sheet{grid-template-columns:minmax(0,1fr)}
+  .stage{min-height:0;padding:16px}
+  .stage img{max-width:280px}
+  .info{padding:20px 16px}
+}
+@media(prefers-reduced-motion:reduce){.tile{transition:none}.tile:hover{transform:none}}

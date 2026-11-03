@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>動態貼圖｜影音與影像設計整合應用</title>
+<meta name="description" content="影音與影像設計整合應用課程，學生親手創作並上架的 LINE 動態貼圖。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="gallery.css">
+</head>
+<body data-kind="animation">
+<nav class="topbar" aria-label="貼圖類型">
+  <div class="wrap">
+    <a class="brand" href="index.html">影音與影像設計整合應用</a>
+    <div class="tabs">
+      <a href="index.html">靜態貼圖</a>
+      <a href="animated.html" aria-current="page">動態貼圖</a>
+      <a href="stickers.html">全螢幕貼圖</a>
+    </div>
+  </div>
+</nav>
+<div class="wrap">
+  <header>
+    <div class="course">同學的 LINE 貼圖</div>
+    <h1>動態貼圖</h1>
+    <p class="lead"><span id="students"></span> 位同學、<span id="sets"></span> 組，都是親手創作、上架的 LINE 動態貼圖。點開作品，就能看貼圖動起來。</p>
+  </header>
+  <main class="grid" id="grid"></main>
+</div>
+<footer><div class="wrap">影音與影像設計整合應用｜貼圖圖片與版權屬各創作者所有，由 LINE 提供</div></footer>
+
+<dialog id="dlg" aria-labelledby="dName">
+  <div class="sheet">
+    <div class="stage" id="stage"><img id="stageImg" alt=""></div>
+    <div class="info">
+      <button class="close" id="close" type="button" aria-label="關閉">×</button>
+      <h2 id="dName"></h2>
+      <p class="set" id="dSet"></p>
+      <p class="tip" id="dTip"></p>
+      <div class="thumbs" id="thumbs"></div>
+      <a class="store" id="dStore" target="_blank" rel="noopener">到 LINE 貼圖小舖看這組 ↗</a>
+    </div>
+  </div>
+</dialog>
+
+<script>
+// 資料來源：學生貼圖連結整理.xlsx。新增作品就加一筆：set 是貼圖組編號（網址最後的數字）；
+// first、n 是第一張貼圖的編號與張數，可在 LINE 商店頁查到，查不到時留 0（只顯示主圖）
+const WORKS = [
+  { name:'林杏玫', set:37443698, title:'可可愛愛捲捲羊', first:918490913, n:8 },
+  { name:'張好', set:37348195, title:'俏娃兒', first:916200073, n:8 },
+  { name:'洪金魚', set:37348151, title:'加油您好', first:916199401, n:8 },
+  { name:'林美絹', set:37348150, title:'可兒', first:916199393, n:8 },
+  { name:'莊明薏', set:37348164, title:'薏薏日常', first:916199625, n:8 },
+  { name:'陳坤榮', set:37443683, title:'可愛貓ye', first:918490569, n:8 },
+  { name:'方碧蓮', set:37348165, title:'快樂驚嚇歡喜自在', first:916199633, n:8 },
+  { name:'鄭麗玲', set:37447038, title:'慮霂clllilin', first:918571745, n:8 },
+  { name:'鄭麗玲', set:37443567, title:'霂ok', first:918488169, n:8 },
+  { name:'鄭景文', set:37415324, title:'懂得放下', first:917785209, n:8 },
+  { name:'王明春', set:37305655, title:'沙彌動畫01', first:915193769, n:8 },
+  { name:'蔡和達', set:37307713, title:'開心組的圖片', first:915233593, n:8 },
+  { name:'潘柔嫻', set:37297257, title:'小虎上班日常', first:915004641, n:16 },
+  { name:'洪詠潔', set:37297228, title:'Zoe 115121925', first:915004057, n:8 },
+  { name:'洪詠潔', set:37330265, title:'正能量女孩向前衝', first:915767041, n:8 },
+  { name:'邱品融', set:37348160, title:'裡面請', first:916199577, n:8 },
+  { name:'葉宥忻', set:37297240, title:'莊師姊', first:915004281, n:8 },
+  { name:'葉宥忻', set:37297231, title:'宥忻動態生活', first:915004097, n:8 },
+  { name:'葉宥忻', set:37330497, title:'宥忻的動態生活', first:915771073, n:8 },
+  { name:'孫禌祿', set:37599842, title:'Plaintext', first:922299089, n:8 },
+  { name:'羅瑞鑫', set:37590557, title:'本艗_v01', first:922053985, n:8 },
+  { name:'林芳照', set:37297250, title:'芳照動態貼圖', first:915004553, n:8 },
+  { name:'高殿珠', set:37297238, title:'毛妹的幸福時光', first:915004273, n:8 },
+  { name:'蔡秀枝', set:37297242, title:'第一次動動', first:915004345, n:8 },
+  { name:'蔡秋香', set:37297227, title:'調皮恰可', first:915004049, n:8 },
+  { name:'吳曉麗', set:37297251, title:'動畫love', first:0, n:0 },
+  { name:'董秀鳳', set:37297225, title:'董咩生活日常', first:915004001, n:8 },
+  { name:'董秀鳳', set:37331137, title:'董咩工作日常二', first:915788345, n:8 },
+];
+</script>
+<script src="gallery.js"></script>
+</body>
+</html>

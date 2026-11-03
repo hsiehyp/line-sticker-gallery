@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>靜態貼圖｜影音與影像設計整合應用</title>
+<meta name="description" content="影音與影像設計整合應用課程，學生親手創作並上架的 LINE 靜態貼圖。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="gallery.css">
+</head>
+<body data-kind="static">
+<nav class="topbar" aria-label="貼圖類型">
+  <div class="wrap">
+    <a class="brand" href="index.html">影音與影像設計整合應用</a>
+    <div class="tabs">
+      <a href="index.html" aria-current="page">靜態貼圖</a>
+      <a href="animated.html">動態貼圖</a>
+      <a href="stickers.html">全螢幕貼圖</a>
+    </div>
+  </div>
+</nav>
+<div class="wrap">
+  <header>
+    <div class="course">同學的 LINE 貼圖</div>
+    <h1>靜態貼圖</h1>
+    <p class="lead"><span id="students"></span> 位同學、<span id="sets"></span> 組，都是親手創作、上架的 LINE 靜態貼圖。點開作品，看整組貼圖。</p>
+  </header>
+  <main class="grid" id="grid"></main>
+</div>
+<footer><div class="wrap">影音與影像設計整合應用｜貼圖圖片與版權屬各創作者所有，由 LINE 提供</div></footer>
+
+<dialog id="dlg" aria-labelledby="dName">
+  <div class="sheet">
+    <div class="stage" id="stage"><img id="stageImg" alt=""></div>
+    <div class="info">
+      <button class="close" id="close" type="button" aria-label="關閉">×</button>
+      <h2 id="dName"></h2>
+      <p class="set" id="dSet"></p>
+      <p class="tip" id="dTip"></p>
+      <div class="thumbs" id="thumbs"></div>
+      <a class="store" id="dStore" target="_blank" rel="noopener">到 LINE 貼圖小舖看這組 ↗</a>
+    </div>
+  </div>
+</dialog>
+
+<script>
+// 資料來源：學生貼圖連結整理.xlsx。新增作品就加一筆：set 是貼圖組編號（網址最後的數字）；
+// first、n 是第一張貼圖的編號與張數，可在 LINE 商店頁查到，查不到時留 0（只顯示主圖）
+const WORKS = [
+  { name:'林杏玫', set:37259872, title:'貓貓小香腸', first:914107625, n:16 },
+  { name:'張好', set:37222917, title:'可愛萌娃娃', first:913228737, n:16 },
+  { name:'張好', set:37288421, title:'好姐兒', first:914771297, n:16 },
+  { name:'洪金魚', set:37137499, title:'大大&呆呆', first:911196577, n:8 },
+  { name:'林美絹', set:37300763, title:'安Megan', first:915084409, n:16 },
+  { name:'莊明薏', set:37144976, title:'小明明的日常用語', first:911380385, n:16 },
+  { name:'莊明薏', set:37363705, title:'可愛薏薏日常', first:916569505, n:16 },
+  { name:'陳坤榮', set:37137330, title:'阿榮的自制貼圖', first:911193545, n:8 },
+  { name:'陳坤榮', set:37147687, title:'愛的心聲', first:911444761, n:8 },
+  { name:'方碧蓮', set:37137345, title:'方方2026', first:911193761, n:8 },
+  { name:'沈淑娟', set:37300795, title:'古錐的水', first:915084969, n:16 },
+  { name:'鄭麗玲', set:37159241, title:'日常生活貼圖pei', first:911714897, n:16 },
+  { name:'劉秀美', set:37141208, title:'QQ184179', first:911283177, n:8 },
+  { name:'劉秀美', set:37214754, title:'生活回覆貼圖', first:913035081, n:16 },
+  { name:'鄭景文', set:37137026, title:'真正能量', first:911187369, n:8 },
+  { name:'鄭景文', set:37514798, title:'法譬如水', first:920200265, n:8 },
+  { name:'鄭景文', set:37452061, title:'小愛變大愛', first:918692025, n:8 },
+  { name:'王明春', set:37262075, title:'可愛小沙彌02', first:914158433, n:16 },
+  { name:'王明春', set:37430529, title:'美的貼圖01', first:918159545, n:32 },
+  { name:'王明春', set:37538288, title:'生活智慧語', first:920761433, n:8 },
+  { name:'蔡和達', set:37310462, title:'開心平安的貼圖', first:915300305, n:8 },
+  { name:'潘柔嫻', set:37137022, title:'兔兔上班日常', first:911187265, n:16 },
+  { name:'潘柔嫻', set:37116670, title:'洄瀾鱻喵', first:910724249, n:24 },
+  { name:'潘柔嫻', set:36268414, title:'幸福の北鼻', first:891923777, n:16 },
+  { name:'潘柔嫻', set:35573652, title:'馬糞海膽的日常Q版', first:877068305, n:8 },
+  { name:'洪詠潔', set:37152303, title:'ZOE 115121925_20261007212527', first:911563881, n:16 },
+  { name:'邱品融', set:37137031, title:'玖皓', first:911187481, n:24 },
+  { name:'葉宥忻', set:37137368, title:'可愛慈濟小學生 - 男生', first:911194193, n:8 },
+  { name:'張彩琳', set:37204869, title:'快樂時光爽妹子', first:912791897, n:16 },
+  { name:'羅瑞鑫', set:37355161, title:'本艗 日常01', first:916362809, n:16 },
+  { name:'羅瑞鑫', set:37361729, title:'倆公婆 1a', first:916509857, n:16 },
+  { name:'楊環綠', set:37302222, title:'綠佳人日常-3', first:915115281, n:16 },
+  { name:'林芳照', set:37528142, title:'Gracelin50', first:920510177, n:24 },
+  { name:'高殿珠', set:37389856, title:'捲捲髮Q姐的日常', first:917181033, n:16 },
+  { name:'高殿珠', set:37229498, title:'家的問候～暖心篇', first:913405217, n:16 },
+  { name:'高殿珠', set:37200157, title:'黑柴秋秋寶貝：生活日常篇', first:912680649, n:16 },
+  { name:'高殿珠', set:37153997, title:'花故娘', first:911607017, n:8 },
+  { name:'蔡秀枝', set:37300803, title:'開心金絲猴', first:915085121, n:16 },
+  { name:'蔡秋香', set:37267071, title:'可愛charcoal', first:914286017, n:16 },
+  { name:'吳曉麗', set:37300823, title:'開心日常的回覆', first:915085481, n:16 },
+  { name:'董秀鳳', set:37171650, title:'董咩學趣人生', first:911996625, n:16 },
+  { name:'董秀鳳', set:37172323, title:'董咩志工日常', first:912009121, n:24 },
+  { name:'董秀鳳', set:37264048, title:'董咩學趣人生二', first:914214609, n:16 },
+];
+</script>
+<script src="gallery.js"></script>
+</body>
+</html>
