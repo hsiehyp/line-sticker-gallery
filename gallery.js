@@ -14,9 +14,13 @@ const $ = id => document.getElementById(id);
 
 $('students').textContent = new Set(WORKS.map(w => w.name)).size;
 $('sets').textContent = WORKS.length;
+// 靜態與動態貼圖的封面最大只有 240px，放大會糊，改用第一張貼圖的高解析度靜態圖（368px）；
+// 查不到貼圖清單的仍用封面。全螢幕貼圖的封面有 480px，維持用封面
+const sharp = KIND !== 'popup';
+const cover = w => (sharp && w.first) ? stickerStill(w.first) : mainStill(w.set);
 $('grid').innerHTML = WORKS.map((w, i) => `
   <button class="tile" type="button" data-i="${i}" style="background:${tint(i)}">
-    <img src="${mainStill(w.set)}" alt="" loading="lazy" width="240" height="240">
+    <img src="${cover(w)}" alt="" loading="lazy" width="240" height="240">
     <span class="name">${w.name}</span>
     <span class="set">${w.title}</span>
   </button>`).join('');
@@ -45,7 +49,13 @@ function open(i) {
     <button class="thumb" type="button" data-id="${id}" aria-pressed="false" aria-label="${KIND === 'static' ? '放大這張貼圖' : '播放這張貼圖'}">
       <img src="${stickerStill(id)}" alt="" loading="lazy" width="120" height="120">
     </button>`).join('');
-  show(mainStill(w.set), MOVE.main(w.set));
+  if (sharp && w.n) {
+    // 封面只有 240px，放大會糊：開啟時直接顯示第一張貼圖（368px；動態頁則播它的動畫）。全螢幕封面有 480px，維持用封面
+    $('thumbs').querySelector('.thumb').setAttribute('aria-pressed', 'true');
+    show(stickerStill(w.first), MOVE.sticker(w.first));
+  } else {
+    show(mainStill(w.set), MOVE.main(w.set));
+  }
   $('dlg').showModal();
 }
 
